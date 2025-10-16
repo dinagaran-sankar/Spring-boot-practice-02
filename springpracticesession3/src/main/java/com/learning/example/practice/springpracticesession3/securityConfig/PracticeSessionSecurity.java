@@ -24,42 +24,36 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class PracticeSessionSecurity {
 
     @Bean
-    public  SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(new KeyCloakOAuth2Converter());
 
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                //.addFilterAfter(new JWTTokenGenerator(), BasicAuthenticationFilter.class)
-                //.addFilterBefore(new JWTTokenValidator(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests((request)->
-                            request
-                                    .requestMatchers("/sesion-1/**").hasRole("USER")
-                                    .requestMatchers("/login/**").hasRole("LOGIN")
-                                    .requestMatchers("/RegisterRider/**").authenticated()
-                                    .requestMatchers("/product/**","/order/**","/person/**").permitAll()
-
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // .addFilterAfter(new JWTTokenGenerator(), BasicAuthenticationFilter.class)
+                // .addFilterBefore(new JWTTokenValidator(), BasicAuthenticationFilter.class)
+                .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/sesion-1/**").hasRole("USER")
+                        .requestMatchers("/login/**").hasRole("LOGIN")
+                        .requestMatchers("/RegisterRider/**").authenticated()
 
                 )
-                .oauth2ResourceServer(rsc->
-                        rsc.jwt(jwtConfigurer ->
-                                jwtConfigurer.jwtAuthenticationConverter(converter)))
-                //.httpBasic(Customizer.withDefaults());
-                .httpBasic(aep->aep.authenticationEntryPoint(new UserAuthenticationEntry()))
-                .exceptionHandling(ash->ash.accessDeniedHandler(new BasicAccessdeniedException()));
-                //.formLogin(hlc->hlc.disable();
+                .oauth2ResourceServer(
+                        rsc -> rsc.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(converter)))
+                // .httpBasic(Customizer.withDefaults());
+                .httpBasic(aep -> aep.authenticationEntryPoint(new UserAuthenticationEntry()))
+                .exceptionHandling(ash -> ash.accessDeniedHandler(new BasicAccessdeniedException()));
+        // .formLogin(hlc->hlc.disable();
         return (SecurityFilterChain) http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
-    public CompromisedPasswordChecker compromisedPasswordChecker()
-    {
+    public CompromisedPasswordChecker compromisedPasswordChecker() {
         return new HaveIBeenPwnedRestApiPasswordChecker();
     }
 }
