@@ -16,57 +16,57 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderRepository orderRepository;
+        private final OrderRepository orderRepository;
 
-    @PostMapping(path = "/create-Order")
-    public ResponseEntity<UserInfoDTO> createNewOrder(@RequestBody UserInfoDTO userInfoDTO)
-    {
-        System.out.println("ordr entity: " + userInfoDTO.getOrderInfoDTO().getName());
+        @PostMapping(path = "/create-Order")
+        public ResponseEntity<UserInfoDTO> createNewOrder(@RequestBody UserInfoDTO userInfoDTO) {
+                System.out.println("ordr entity: " + userInfoDTO.getOrderInfoDTO().getName());
 
-        OrderDetailsEntity orderDetails = new OrderDetailsEntity();
-        orderDetails.setName(userInfoDTO.getOrderInfoDTO().getName());
-        orderDetails.setCost(userInfoDTO.getOrderInfoDTO().getCost());
-        orderDetails.setDate(LocalDateTime.now());
+                OrderDetailsEntity orderDetails = new OrderDetailsEntity();
+                orderDetails.setName(userInfoDTO.getOrderInfoDTO().getName());
+                orderDetails.setCost(userInfoDTO.getOrderInfoDTO().getCost());
+                orderDetails.setDate(LocalDateTime.now());
 
-        //user entity
-        UserEntity userInfo = new UserEntity();
-        userInfo.setName(userInfoDTO.getName());
-        userInfo.setMobileNumber(userInfoDTO.getMobileNumber());
-        userInfo.setUserAddress(userInfoDTO.getUserAddress());
-        userInfo.setOrderDetails(orderDetails);
+                // user entity
+                UserEntity userInfo = new UserEntity();
+                userInfo.setName(userInfoDTO.getName());
+                userInfo.setMobileNumber(userInfoDTO.getMobileNumber());
+                userInfo.setUserAddress(userInfoDTO.getUserAddress());
+                userInfo.setOrderDetails(orderDetails);
 
-        UserEntity save = orderRepository.save(userInfo);
-        OrderInfoDTO orderInfoDTO = new OrderInfoDTO(
-                save.getOrderDetails().getName(),save.getOrderDetails().getCost(), save.getOrderDetails().getDate());
-        UserInfoDTO userDTO = new UserInfoDTO(
-                save.getName(), save.getMobileNumber(),save.getUserAddress(),orderInfoDTO);
-        return ResponseEntity.ok().body(userDTO);
-    }
+                UserEntity save = orderRepository.save(userInfo);
+                OrderInfoDTO orderInfoDTO = new OrderInfoDTO(
+                                save.getOrderDetails().getName(), save.getOrderDetails().getCost(),
+                                save.getOrderDetails().getDate());
+                UserInfoDTO userDTO = new UserInfoDTO(
+                                save.getName(), save.getMobileNumber(), save.getUserAddress(), orderInfoDTO);
+                return ResponseEntity.ok().body(userDTO);
+        }
 
-    @GetMapping(path = "/fetchOrderDetails/{id}")
-    public ResponseEntity<UserInfoDTO> fetchOrderDetails(@PathVariable Integer id)
-    {
-        UserEntity userEntity = orderRepository.findById(id).get();
+        @GetMapping(path = "/fetchOrderDetails/{id}")
+        public ResponseEntity<UserInfoDTO> fetchOrderDetails(@PathVariable Integer id) {
+                UserEntity userEntity = orderRepository.findById(id).get();
 
-        OrderDetailsEntity orderDetails = userEntity.getOrderDetails();
-        OrderInfoDTO orderInfoDTO = new OrderInfoDTO(orderDetails.getName(),
-                orderDetails.getCost(),orderDetails.getDate());
-        UserInfoDTO userInfoDTO = new UserInfoDTO(userEntity.getName(), userEntity.getMobileNumber(),userEntity.getUserAddress(),orderInfoDTO);
-        return ResponseEntity.ok()
-                .body(userInfoDTO);
-    }
+                OrderDetailsEntity orderDetails = userEntity.getOrderDetails();
+                OrderInfoDTO orderInfoDTO = new OrderInfoDTO(orderDetails.getName(),
+                                orderDetails.getCost(), orderDetails.getDate());
+                UserInfoDTO userInfoDTO = new UserInfoDTO(userEntity.getName(), userEntity.getMobileNumber(),
+                                userEntity.getUserAddress(), orderInfoDTO);
+                return ResponseEntity.ok()
+                                .body(userInfoDTO);
+        }
 
-    //bidirectional
-//    @GetMapping("/fetchUserDetails/{id}")
-//    public ResponseEntity<OrderInfoDTO> fetchUserDetails(@PathVariable Integer id)
-//    {
-//        UserEntity userEntity = orderRepository.findById(id).get();
-//
-//        OrderDetailsEntity orderDetails = userEntity.getOrderDetails();
-//        OrderInfoDTO orderInfoDTO = new OrderInfoDTO(orderDetails.getName(),
-//                orderDetails.getCost(),orderDetails.getDate());
-//        //UserInfoDTO userInfoDTO = new UserInfoDTO(userEntity.getName(), userEntity.getMobileNumber(),userEntity.getUserAddress(),orderInfoDTO);
-//        return ResponseEntity.ok()
-//                .body(orderInfoDTO);
-//    }
+        // bidirectional
+        @GetMapping("/fetchUserDetails/{id}")
+        public ResponseEntity<OrderInfoDTO> fetchUserDetails(@PathVariable Integer id) {
+                UserEntity userEntity = orderRepository.findById(id).get();
+
+                OrderDetailsEntity orderDetails = userEntity.getOrderDetails();
+                OrderInfoDTO orderInfoDTO = new OrderInfoDTO(orderDetails.getName(),
+                                orderDetails.getCost(), orderDetails.getDate());
+                // UserInfoDTO userInfoDTO = new UserInfoDTO(userEntity.getName(),
+                // userEntity.getMobileNumber(),userEntity.getUserAddress(),orderInfoDTO);
+                return ResponseEntity.ok()
+                                .body(orderInfoDTO);
+        }
 }
